@@ -1,0 +1,3 @@
+*.pyc
+venv/
+openstack_config.txt

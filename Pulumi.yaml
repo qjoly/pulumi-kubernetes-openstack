@@ -1,0 +1,47 @@
+name: pulumi-kubernetes-infomaniak
+runtime:
+  name: python
+  options:
+    virtualenv: venv
+description: A Pulumi program that deploys a Kubernetes cluster on OpenStack
+template:
+  description: Deploy nodes for a Kubernetes cluster on OpenStack
+  config:
+    enable_admin_instance: 
+      default: "true"
+      description: Enable the creation of an admin instance
+    external_network_name: 
+      default: ext-net1
+      description: The name of the external network
+    flavor_admin: 
+      default: a4-ram8-disk50-perf1
+      description: The flavor of the admin instance
+    flavor_controlplane: 
+      default: a4-ram8-disk50-perf1
+      description: The flavor of the controlplane instances
+    flavor_worker:
+      default: a4-ram8-disk50-perf1
+      description: The flavor of the worker instances
+    floating_ip_net_id: 
+      default: 0f9c3806-bd21-490f-918d-4a6d1c648489
+      description: The ID of the network to use for floating IPs
+    image_admin: 
+      default: Debian 12 bookworm
+      description: The image of the admin instance
+    image_controlplane: 
+      default: Debian 12 bookworm
+      description: The image of the controlplane instances
+    image_worker: 
+      default: Debian 12 bookworm
+      description: The image of the worker instances
+    number_of_controlplane: 
+      default: "2"
+      description: The number of controlplane instances
+    number_of_worker: 
+      default: "2"
+      description: The number of worker instances
+    public_key: 
+      description: The public key to use for SSH access
+    subnet_cidr:
+      default: 192.168.199.0/24
+      description: The CIDR of the subnet to use for the cluster
