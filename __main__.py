@@ -21,6 +21,7 @@ admin_keypair = compute.Keypair("admin-keypair", public_key=config.get('public_k
 
 # Generate a new keypair to let the admin instance connect to the other instances
 node_keypair = compute.Keypair("nodes-keypair")
+pulumi.export("nodes_keypair", node_keypair.private_key)
 
 # Security groups to allow ssh for the admin instance
 ssh_external_secgroup = networking.SecGroup("ssh_external", description="My neutron security group")
@@ -46,18 +47,31 @@ networking.SecGroupRule("egress-allow-everything-in-lan",
     remote_ip_prefix=config.get('subnet_cidr'),
     security_group_id=node_secgroup.id)
 
-enable_admin_instance = config.get_bool('enable_admin_instance')
 
-if enable_admin_instance:
+if config.get_bool('enable_admin_instance'):
     # Create an admin instance
+    user_data=f"""#!/bin/bash
+    sudo apt update -y
+    sudo apt install -y pipx git curl python3-pip unzip
+    sudo -u debian bash -c '
+    cd /home/debian
+    git clone https://github.com/kubernetes-sigs/kubespray'
+    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+    chmod +x kubectl
+    sudo mv kubectl /usr/local/bin/'
+    """
+
     admin_instance = compute.Instance("admin-instance",
                                         flavor_name=config.get('flavor_admin'),
                                         image_name=config.get('image_admin'),
                                         networks=[{"name": "ext-net1"}, {"name": lan_net.name}],
                                         key_pair=admin_keypair.name,
-                                        security_groups=[ssh_external_secgroup.name, node_secgroup.name])
+                                        security_groups=[ssh_external_secgroup.name, node_secgroup.name],
+                                        user_data=user_data, 
+                                        opts=pulumi.ResourceOptions(depends_on=[node_keypair])
+                                        )
 
-pulumi.export("admin_external_ip", admin_instance.networks[0].fixed_ip_v4)
+    pulumi.export("admin_external_ip", admin_instance.networks[0].fixed_ip_v4)
 
 instances = {
     "controlplane": [],
@@ -70,7 +84,7 @@ for controlplane in range(int(config.get('number_of_controlplane'))):
                                              flavor_name=config.get('flavor_controlplane'),
                                              image_name=config.get('image_controlplane'),
                                              networks=[{"name": lan_net.name}],
-                                             key_pair=admin_keypair.name,
+                                             key_pair=node_keypair.name,
                                              security_groups=[node_secgroup.name],
                                              opts=pulumi.ResourceOptions(depends_on=[subnet, node_secgroup])
                                              )
@@ -86,7 +100,7 @@ for worker in range(int(config.get('number_of_worker'))):
                                        flavor_name=config.get('flavor_worker'),
                                        image_name=config.get('image_worker'),
                                        networks=[{"name": lan_net.name}, {"name": "ext-net1"}],
-                                       key_pair=admin_keypair.name,
+                                       key_pair=node_keypair.name,
                                        security_groups=[node_secgroup.name],
                                        opts=pulumi.ResourceOptions(depends_on=[subnet, node_secgroup])
                                        )
@@ -97,8 +111,8 @@ for worker in range(int(config.get('number_of_worker'))):
         })
 
 inventory_ip = {
-    "controlplane": [instance["ip"] for instance in instances["controlplane"]],
-    "worker": [instance["ip"] for instance in instances["worker"]]
+    "kube-controlplane": [instance["ip"] for instance in instances["controlplane"]],
+    "kube-node": [instance["ip"] for instance in (instances["worker"] + instances["controlplane"]) ]
 }
 
 pulumi.export('ip_addresses', inventory_ip)
