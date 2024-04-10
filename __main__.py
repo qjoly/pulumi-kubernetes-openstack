@@ -99,7 +99,7 @@ for worker in range(int(config.get('number_of_worker'))):
     instance_worker = compute.Instance(f"worker-{worker}",
                                        flavor_name=config.get('flavor_worker'),
                                        image_name=config.get('image_worker'),
-                                       networks=[{"name": lan_net.name}, {"name": "ext-net1"}],
+                                       networks=[{"name": lan_net.name} ],
                                        key_pair=node_keypair.name,
                                        security_groups=[node_secgroup.name],
                                        opts=pulumi.ResourceOptions(depends_on=[subnet, node_secgroup])
