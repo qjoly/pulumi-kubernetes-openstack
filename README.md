@@ -1,6 +1,20 @@
+<p align="center">
+    <img src="https://avatars.githubusercontent.com/u/82603435?v=4" width="140px" alt="Helm LOGO"/>
+</p>
+
+<div align="center">
+
+  [![Blog](https://img.shields.io/badge/Blog-blue?style=for-the-badge&logo=buymeacoffee&logoColor=white)](https://une-tasse-de.cafe/)
+  [![Pulumi](https://img.shields.io/badge/Pulumi-8A3391?style=for-the-badge&logo=pulumi&logoColor=white)](https://www.pulumi.com//)
+  [![Openstack](https://img.shields.io/badge/Openstack-%23f01742.svg?style=for-the-badge&logo=openstack&logoColor=white)](https://www.openstack.org/)
+
+</div>
+
 ## Pulumi Kubernetes Openstack Example
 
 This example demonstrates how to deploy nodes for a Kubernetes cluster on Openstack using Pulumi.
+
+Note: By default, the values in the `Pulumi.yaml` use Infomaniak Openstack. You can change the values in the `Pulumi.yaml` file to match your Openstack configuration.
 
 ### Prerequisites
 
