@@ -45,3 +45,41 @@ Run the pulumi program:
 ```bash
 pulumi up
 ```
+
+### Install Kubernetes cluster
+
+Export the private key that can be used to connect to the nodes:
+
+```bash
+pulumi stack output nodes_keypair --show-secrets > nodes_keypair.pem
+```
+
+Send it to the admin node:
+
+```bash
+scp nodes_keypair.pem debian@$(pulumi stack output admin_external_ip):.ssh/id_rsa
+ssh debian@$(pulumi stack output admin_external_ip) chmod 600 .ssh/id_rsa
+```
+
+Generate the inventory file:
+
+```bash
+pulumi stack output ip_addresses --json | python3 generate_inventory.py > inventory.ini
+scp inventory.ini debian@$(pulumi stack output admin_external_ip):./inventory.ini
+```
+
+On the admin node, Create a virtual environment and install the required packages:
+
+```bash
+ssh debian@$(pulumi stack output admin_external_ip)
+cd kubespray
+cp -r inventory/sample/ ./inventory/pulumi-cluster
+cp ~/inventory.ini ./inventory/pulumi-cluster/inventory.ini
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+```bash
+ansible-playbook -i ./inventory/pulumi-cluster/inventory.ini -u debian --become --become-user=root cluster.yml
+```

@@ -1,3 +1,6 @@
 *.pyc
 venv/
 openstack_config.txt
+nodes_keypair.pem
+inventory.ini
+Pulumi.dev.yaml
