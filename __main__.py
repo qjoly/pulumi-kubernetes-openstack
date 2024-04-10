@@ -112,7 +112,7 @@ for worker in range(int(config.get('number_of_worker'))):
 
 inventory_ip = {
     "kube-controlplane": [instance["ip"] for instance in instances["controlplane"]],
-    "kube-node": [instance["ip"] for instance in (instances["worker"] + instances["controlplane"]) ]
+    "kube-node": [instance["ip"] for instance in (instances["worker"]) ]
 }
 
 pulumi.export('ip_addresses', inventory_ip)
