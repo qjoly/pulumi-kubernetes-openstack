@@ -11,10 +11,15 @@ lan_net = networking.Network("nodes-net", admin_state_up=True)
 subnet = networking.Subnet("nodes-subnet",
     network_id=lan_net.id,
     cidr=config.get('subnet_cidr'),
-    ip_version=4)
+    ip_version=4,
+    dns_nameservers=["1.1.1.1", "9.9.9.9"]
+)
 
 # Create a router (to connect the subnet to internet)
 router = networking.Router("nodes-router", admin_state_up=True, external_network_id=config.get('floating_ip_net_id'))
+router_interface1 = networking.RouterInterface("routerInterface1",
+    router_id=router.id,
+    subnet_id=subnet.id)
 
 # Upload our public key to OpenStack
 admin_keypair = compute.Keypair("admin-keypair", public_key=config.get('public_key'))
