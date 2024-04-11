@@ -11,10 +11,15 @@ lan_net = networking.Network("nodes-net", admin_state_up=True)
 subnet = networking.Subnet("nodes-subnet",
     network_id=lan_net.id,
     cidr=config.get('subnet_cidr'),
-    ip_version=4)
+    ip_version=4,
+    dns_nameservers=["1.1.1.1", "9.9.9.9"]
+)
 
 # Create a router (to connect the subnet to internet)
 router = networking.Router("nodes-router", admin_state_up=True, external_network_id=config.get('floating_ip_net_id'))
+router_interface1 = networking.RouterInterface("routerInterface1",
+    router_id=router.id,
+    subnet_id=subnet.id)
 
 # Upload our public key to OpenStack
 admin_keypair = compute.Keypair("admin-keypair", public_key=config.get('public_key'))
@@ -99,7 +104,7 @@ for worker in range(int(config.get('number_of_worker'))):
     instance_worker = compute.Instance(f"worker-{worker}",
                                        flavor_name=config.get('flavor_worker'),
                                        image_name=config.get('image_worker'),
-                                       networks=[{"name": lan_net.name}, {"name": "ext-net1"}],
+                                       networks=[{"name": lan_net.name} ],
                                        key_pair=node_keypair.name,
                                        security_groups=[node_secgroup.name],
                                        opts=pulumi.ResourceOptions(depends_on=[subnet, node_secgroup])
@@ -112,7 +117,7 @@ for worker in range(int(config.get('number_of_worker'))):
 
 inventory_ip = {
     "kube-controlplane": [instance["ip"] for instance in instances["controlplane"]],
-    "kube-node": [instance["ip"] for instance in (instances["worker"] + instances["controlplane"]) ]
+    "kube-node": [instance["ip"] for instance in (instances["worker"]) ]
 }
 
 pulumi.export('ip_addresses', inventory_ip)
