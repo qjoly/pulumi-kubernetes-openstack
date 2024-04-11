@@ -58,12 +58,9 @@ if config.get_bool('enable_admin_instance'):
     user_data=f"""#!/bin/bash
     sudo apt update -y
     sudo apt install -y pipx git curl python3-pip unzip
-    sudo -u debian bash -c '
-    cd /home/debian
-    git clone https://github.com/kubernetes-sigs/kubespray'
     curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
     chmod +x kubectl
-    sudo mv kubectl /usr/local/bin/'
+    sudo mv kubectl /usr/local/bin/
     """
 
     admin_instance = compute.Instance("admin-instance",
