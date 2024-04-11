@@ -89,7 +89,8 @@ ansible-playbook -i ./inventory/pulumi-cluster/inventory.ini -u debian --become 
 
 ### Output of the Pulumi program
 
-[![asciicast](https://asciinema.org/a/P9JDxnpB8zNKDE7XHO9OOMBvD.svg)](https://asciinema.org/a/P9JDxnpB8zNKDE7XHO9OOMBvD)
+<a href="https://asciinema.org/a/P9JDxnpB8zNKDE7XHO9OOMBvD" target="_blank"><img src="https://asciinema.org/a/P9JDxnpB8zNKDE7XHO9OOMBvD.svg" /></a>
+
 
 :warning: Note that the output of the pulumi program will be different as the resources are created dynamically.
 
