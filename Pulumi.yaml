@@ -10,9 +10,6 @@ template:
     enable_admin_instance: 
       default: "true"
       description: Enable the creation of an admin instance
-    external_network_name: 
-      default: ext-net1
-      description: The name of the external network
     flavor_admin: 
       default: a4-ram8-disk50-perf1
       description: The flavor of the admin instance
