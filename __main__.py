@@ -57,7 +57,7 @@ if config.get_bool('enable_admin_instance'):
     # Create an admin instance
     user_data=f"""#!/bin/bash
     sudo apt update -y
-    sudo apt install -y pipx git curl python3-pip unzip
+    sudo apt install -y git curl python3-pip
     curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
     chmod +x kubectl
     sudo mv kubectl /usr/local/bin/
@@ -70,11 +70,11 @@ if config.get_bool('enable_admin_instance'):
                                         key_pair=admin_keypair.name,
                                         security_groups=[ssh_external_secgroup.name, node_secgroup.name],
                                         user_data=user_data, 
-                                        opts=pulumi.ResourceOptions(depends_on=[node_keypair])
+                                        opts=pulumi.ResourceOptions(depends_on=[node_keypair, router])
                                         )
     floating_ip_admin = compute.FloatingIp("admin-instance", pool="ext-floating1")
 
-    floating_ip_admin_associate = compute.FloatingIpAssociate("fip1FloatingIpAssociate",
+    floating_ip_admin_associate = compute.FloatingIpAssociate("floating-ip-admin",
         floating_ip=floating_ip_admin.address,
         instance_id=admin_instance.id,
         fixed_ip=admin_instance.networks[0].fixed_ip_v4)
@@ -85,8 +85,6 @@ instances = {
     "controlplane": [],
     "worker": []
 }
-
-
 
 # Create controlplane and worker instances
 for controlplane in range(int(config.get('number_of_controlplane'))):

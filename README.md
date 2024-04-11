@@ -87,6 +87,12 @@ pip install -r requirements.txt
 ansible-playbook -i ./inventory/pulumi-cluster/inventory.ini -u debian --become --become-user=root cluster.yml
 ```
 
+### Output of the Pulumi program
+
+[![asciicast](https://asciinema.org/a/P9JDxnpB8zNKDE7XHO9OOMBvD.svg)](https://asciinema.org/a/P9JDxnpB8zNKDE7XHO9OOMBvD)
+
+:warning: Note that the output of the pulumi program will be different as the resources are created dynamically.
+
 ### Destroy the resources
 
 To destroy the resources created by the Pulumi program, run the following command:
