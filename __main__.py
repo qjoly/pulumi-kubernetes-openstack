@@ -69,19 +69,27 @@ if config.get_bool('enable_admin_instance'):
     admin_instance = compute.Instance("admin-instance",
                                         flavor_name=config.get('flavor_admin'),
                                         image_name=config.get('image_admin'),
-                                        networks=[{"name": "ext-net1"}, {"name": lan_net.name}],
+                                        networks=[ {"name": lan_net.name}],
                                         key_pair=admin_keypair.name,
                                         security_groups=[ssh_external_secgroup.name, node_secgroup.name],
                                         user_data=user_data, 
                                         opts=pulumi.ResourceOptions(depends_on=[node_keypair])
                                         )
+    floating_ip_admin = compute.FloatingIp("admin-instance", pool="ext-floating1")
 
-    pulumi.export("admin_external_ip", admin_instance.networks[0].fixed_ip_v4)
+    floating_ip_admin_associate = compute.FloatingIpAssociate("fip1FloatingIpAssociate",
+        floating_ip=floating_ip_admin.address,
+        instance_id=admin_instance.id,
+        fixed_ip=admin_instance.networks[0].fixed_ip_v4)
+    
+    pulumi.export("admin_external_ip", floating_ip_admin.address)
 
 instances = {
     "controlplane": [],
     "worker": []
 }
+
+
 
 # Create controlplane and worker instances
 for controlplane in range(int(config.get('number_of_controlplane'))):

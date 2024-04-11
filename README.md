@@ -61,6 +61,8 @@ scp nodes_keypair.pem debian@$(pulumi stack output admin_external_ip):.ssh/id_rs
 ssh debian@$(pulumi stack output admin_external_ip) chmod 600 .ssh/id_rsa
 ```
 
+*:warning: Note that you have to set the pulumi config passphrase to access content of the private key.*
+
 Generate the inventory file:
 
 ```bash
@@ -84,23 +86,10 @@ pip install -r requirements.txt
 ansible-playbook -i ./inventory/pulumi-cluster/inventory.ini -u debian --become --become-user=root cluster.yml
 ```
 
-## Troubleshooting
+### Destroy the resources
 
-### SSH on admin instance is slow
-
-If you are experiencing slow SSH connections to the admin instance, it's maybe because of the default route pointing to the wrong interface (letting the ssh traffic go through the private network instead of the public one).
+To destroy the resources created by the Pulumi program, run the following command:
 
 ```bash
-$ ip r
-default via 192.168.199.1 dev ens4 proto dhcp src 192.168.199.226 metric 100 
-default via 195.15.201.1 dev ens3 proto dhcp src 195.15.201.38 metric 100 
-192.168.199.0/24 dev ens4 proto kernel scope link src 192.168.199.226 metric 100 
-192.168.199.1 dev ens4 proto dhcp scope link src 192.168.199.226 metric 100 
-192.168.199.2 dev ens4 proto dhcp scope link src 192.168.199.226 metric 100 
-```
-
-You can fix this by delete the default route of the private network:
-
-```bash
-sudo ip route delete default via 192.168.199.1
+pulumi destroy
 ```
