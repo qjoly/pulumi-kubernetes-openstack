@@ -5,7 +5,8 @@
 <div align="center">
 
   [![Blog](https://img.shields.io/badge/Blog-blue?style=for-the-badge&logo=buymeacoffee&logoColor=white)](https://une-tasse-de.cafe/)
-  [![Pulumi](https://img.shields.io/badge/Pulumi-8A3391?style=for-the-badge&logo=pulumi&logoColor=white)](https://www.pulumi.com//)
+  [![Pulumi](https://img.shields.io/badge/Pulumi-8A3391?style=for-the-badge&logo=pulumi&logoColor=white)](https://www.pulumi.com/)
+  [![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white)](https://kubernetes.io/)
   [![Openstack](https://img.shields.io/badge/Openstack-%23f01742.svg?style=for-the-badge&logo=openstack&logoColor=white)](https://www.openstack.org/)
 
 </div>
@@ -74,7 +75,7 @@ On the admin node, Create a virtual environment and install the required package
 
 ```bash
 ssh debian@$(pulumi stack output admin_external_ip)
-cd kubespray
+git clone https://github.com/kubernetes-sigs/kubespray && cd kubespray
 cp -r inventory/sample/ ./inventory/pulumi-cluster
 cp ~/inventory.ini ./inventory/pulumi-cluster/inventory.ini
 python3 -m venv venv
