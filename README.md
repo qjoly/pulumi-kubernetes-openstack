@@ -87,6 +87,29 @@ pip install -r requirements.txt
 ansible-playbook -i ./inventory/pulumi-cluster/inventory.ini -u debian --become --become-user=root cluster.yml
 ```
 
+<details>
+  <summary>All in one script</summary>
+
+:warning: Only run this script if you are sure of what you are doing. :warning:
+
+```bash
+pulumi stack output nodes_keypair --show-secrets > nodes_keypair.pem
+scp nodes_keypair.pem debian@$(pulumi stack output admin_external_ip):.ssh/id_rsa
+ssh debian@$(pulumi stack output admin_external_ip) chmod 600 .ssh/id_rsa
+pulumi stack output ip_addresses --json | python3 generate_inventory.py > inventory.ini
+scp inventory.ini debian@$(pulumi stack output admin_external_ip):./inventory.ini
+ssh debian@$(pulumi stack output admin_external_ip) \ '
+  git clone https://github.com/kubernetes-sigs/kubespray && cd kubespray && \
+  cp -r inventory/sample/ ./inventory/pulumi-cluster && \
+  cp ~/inventory.ini ./inventory/pulumi-cluster/inventory.ini && \
+  python3 -m venv venv && \
+  source venv/bin/activate && \
+  pip install -r requirements.txt && \
+  ansible-playbook -i ./inventory/pulumi-cluster/inventory.ini -u debian --become --become-user=root cluster.yml'
+```
+
+</details>
+
 ### Output of the Pulumi program
 
 <a href="https://asciinema.org/a/P9JDxnpB8zNKDE7XHO9OOMBvD" target="_blank"><img src="https://asciinema.org/a/P9JDxnpB8zNKDE7XHO9OOMBvD.svg" /></a>
