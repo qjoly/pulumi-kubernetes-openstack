@@ -106,6 +106,9 @@ ssh debian@$(pulumi stack output admin_external_ip) \ '
   source venv/bin/activate && \
   pip install -r requirements.txt && \
   ansible-playbook -i ./inventory/pulumi-cluster/inventory.ini -u debian --become --become-user=root cluster.yml'
+
+CP_IP=$(pulumi stack output 'ip_addresses' | jq -r '."kube-controlplane"[0]')
+ssh debian@$(pulumi stack output admin_external_ip) "mkdir -p .kube && ssh $CP_IP sudo cat /root/.kube/config > .kube/config && sed -i 's/127.0.0.1/$CP_IP/g' ~/.kube/config && echo 'Done'"
 ```
 
 </details>
