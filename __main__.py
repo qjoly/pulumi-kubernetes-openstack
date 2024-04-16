@@ -74,6 +74,8 @@ if config.get_bool("enable_admin_instance"):
     sudo apt update -y
     sudo apt install -y git curl python3-pip python3.11-venv
     curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+    curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+    wget https://github.com/derailed/k9s/releases/download/v0.32.4/k9s_linux_amd64.deb && dpkg -i ./k9s_linux_amd64.deb
     chmod +x kubectl
     sudo mv kubectl /usr/local/bin/
     """
