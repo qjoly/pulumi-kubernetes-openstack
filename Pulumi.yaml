@@ -32,7 +32,7 @@ template:
       default: Debian 12 bookworm
       description: The image of the worker instances
     number_of_controlplane: 
-      default: "2"
+      default: "3"
       description: The number of controlplane instances
     number_of_worker: 
       default: "2"
