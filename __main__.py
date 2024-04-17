@@ -103,6 +103,11 @@ if config.get_bool("enable_admin_instance"):
 
 instances = {"controlplane": [], "worker": []}
 
+user_data = f"""#!/bin/bash
+sudo apt update -y
+sudo apt install -y open-iscsi
+"""
+
 # Create controlplane and worker instances
 for controlplane in range(int(config.get("number_of_controlplane"))):
     instance_controlplane = compute.Instance(
@@ -112,6 +117,7 @@ for controlplane in range(int(config.get("number_of_controlplane"))):
         networks=[{"name": lan_net.name}],
         key_pair=node_keypair.name,
         security_groups=[node_secgroup.name],
+        user_data=user_data,
         opts=pulumi.ResourceOptions(depends_on=[subnet, node_secgroup]),
     )
     instances["controlplane"].append(
@@ -131,6 +137,7 @@ for worker in range(int(config.get("number_of_worker"))):
         networks=[{"name": lan_net.name}],
         key_pair=node_keypair.name,
         security_groups=[node_secgroup.name],
+        user_data=user_data,
         opts=pulumi.ResourceOptions(depends_on=[subnet, node_secgroup]),
     )
     instances["worker"].append(
