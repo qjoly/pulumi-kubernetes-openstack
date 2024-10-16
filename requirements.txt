@@ -1,2 +1,2 @@
 pulumi>=3.0.0,<4.0.0
-pulumi-openstack>=4.1.0,<4.2.0
+pulumi-openstack>=5.0.1,<5.1.0
